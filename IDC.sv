@@ -60,15 +60,16 @@ always_ff @(posedge clk ,negedge rst_n) begin
                 temp <= (t + store); 
 				out_valid <= 0;
             end
-            if(count2 == 1)begin
-                out_valid <= 1;
-                temp <= (t + in_id+store);
-            end           
-            if(out_valid) begin
+            else begin
                 out_valid <= 0;
                 temp <= 0;
                 count2 <= 10;
             end
+            if(count2 == 1)begin
+                out_valid <= 1;
+                temp <= (t + in_id+store);
+            end           
+
 		end
 end
 
@@ -121,9 +122,9 @@ always_comb begin
     
 end
 
-always_comb begin
-    out_legal_id = ((t == 0) && out_valid)? 1:0;
-end
+
+    assign out_legal_id =(rst_n)? (t == 0): 0;
+
 
 endmodule
 
@@ -243,6 +244,12 @@ output logic [3:0] out;
 			8'h97: out = 3;
 			8'h98: out = 2;
 			8'h99: out = 1;
+
+			8'hA1: out = 0;
+			8'hA2: out = 0;
+			8'hA3: out = 0;
+			8'hA4: out = 0;
+			8'hA6: out = 0;
 			default: out = 0;
 		endcase
 	end
