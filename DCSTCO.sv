@@ -132,13 +132,13 @@ always_ff@(posedge clk or negedge rst_n)begin
 			peach_in_shop <= peach_in_shop - in_temp[2:0];	
 		end
 		else  begin
-			if(nonugget)
+			if(product_out && handshake1)
 				nugget_in_shop <= 50;
-			else if(noapple)
+			else if(product_out && handshake2)
 				apple_in_shop <= 50;
-			else if(nofriedrice)
+			else if(!product_out && handshake1)
 				fried_rice_in_shop <= 50;
-			else if(nopeach )
+			else if(!product_out && handshake2 )
 				peach_in_shop <= 50;
 		end	
 	end
@@ -175,14 +175,16 @@ always_ff @(posedge clk or negedge rst_n)begin
 	end
 end
 assign ten_temp = total/10;
-assign havenugget = nugget_in_shop >= in_temp[11:9];
-assign haveapple = apple_in_shop >= in_temp[5:3];
-assign havepeach = peach_in_shop >= in_temp[2:0];
-assign havefriedrice = fried_rice_in_shop >= in_temp[8:6];
-assign nonugget = (nugget_in_shop < in_temp[11:9])||!(product_out && handshake1);
-assign noapple = (apple_in_shop < in_temp[5:3])||!(product_out && handshake2);
-assign nopeach = (peach_in_shop < in_temp[2:0])||!(!product_out && handshake2);
-assign nofriedrice = (fried_rice_in_shop < in_temp[8:6])||!(!product_out && handshake1);
+assign havenugget = nugget_in_shop >= in_temp[11:9]||(product_out && handshake1);
+assign haveapple = apple_in_shop >= in_temp[5:3]||(product_out && handshake2);
+assign havepeach = peach_in_shop >= in_temp[2:0]||(!product_out && handshake2);
+assign havefriedrice = fried_rice_in_shop >= in_temp[8:6] || (!product_out && handshake1);
+
+assign nonugget = (nugget_in_shop < in_temp[11:9])&&!(product_out && handshake1);
+assign noapple = (apple_in_shop < in_temp[5:3])&&!(product_out && handshake2);
+assign nopeach = (peach_in_shop < in_temp[2:0])&&!(!product_out && handshake2);
+assign nofriedrice = (fried_rice_in_shop < in_temp[8:6])&&!(!product_out && handshake1);
+
 always_ff@(posedge clk or negedge rst_n) begin
 	if(!rst_n)begin
 		one <= 0;
